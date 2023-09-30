@@ -37,55 +37,30 @@ class MessageApiImpl : MessagingApi {
         }.body<LoginResponse>()
     }
 
-    override suspend fun postMessage(thread: Int, body: String, header: String): String {
-        return try {
+    override suspend fun postMessage(thread: Int, body: String, header: String): Message {
+        return httpClient.post(ApiRoutes.messagingUrl) {
+            headers {
+                append("X-Branch-Auth-Token", header)
+            }
+            parameter("thread_id", 1)
+            parameter("body", "gpt")
 
-            httpClient.post(ApiRoutes.messagingUrl) {
-                headers {
-                    append("X-Branch-Auth-Token", header)
-                }
-                parameter("thread_id", 1)
-                parameter("body", "gpt")
-
-                contentType(ContentType.Application.Json)
+            contentType(ContentType.Application.Json)
 
 
-            }.body<String>()
-        } catch (e: RedirectResponseException) {
-            // 3xx - responses
-            println("Error: ${e.response.status.description}")
-            Message(
-                id = 1, userId = "g", agentId = "3", timestamp = "gg", threadId = 1, body = "fg"
-            ).toString()
-        } catch (e: ClientRequestException) {
-            // 4xx - responses
-            println("Error: ${e.response.status.description}")
-            Message(
-                id = 1, userId = "g", agentId = "3", timestamp = "gg", threadId = 1, body = "fg"
-            ).toString()
-        } catch (e: ServerResponseException) {
-            // 5xx - responses
-            println("Error: ${e.response.status.description}")
-            Message(
-                id = 1, userId = "g", agentId = "3", timestamp = "gg", threadId = 1, body = "fg"
-            ).toString()
-        } catch (e: Exception) {
-            println("Error: ${e.message}")
-            Message(
-                id = 1, userId = "g", agentId = "3", timestamp = "gg", threadId = 1, body = "fg"
-            ).toString()
-        }
+        }.body<Message>()
+
     }
 
     override suspend fun getAllMessages(header: String): List<Message> {
         return try {
 
             httpClient.get(ApiRoutes.messagingUrl) {
-                    headers {
-                        append("X-Branch-Auth-Token", header)
-                    }
+                headers {
+                    append("X-Branch-Auth-Token", header)
+                }
 
-                }.body<List<Message>>()
+            }.body<List<Message>>()
         } catch (e: RedirectResponseException) {
             // 3xx - responses
             println("Error: ${e.response.status.description}")

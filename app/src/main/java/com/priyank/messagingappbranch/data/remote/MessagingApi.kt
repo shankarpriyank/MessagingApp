@@ -8,6 +8,6 @@ import com.priyank.messagingappbranch.util.Resource
 interface MessagingApi {
     suspend fun login(loginCredentials: LoginCredentials) : LoginResponse
 
-    suspend fun postMessage(thread: Int, body : String, header: String) : String
+    suspend fun postMessage(thread: Int, body : String, header: String) : Message
     suspend fun getAllMessages(header: String) : List<Message>
 }
