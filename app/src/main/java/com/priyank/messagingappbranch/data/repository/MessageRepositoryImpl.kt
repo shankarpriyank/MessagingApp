@@ -62,11 +62,10 @@ class MessageRepositoryImpl(private val messagingApi: MessagingApi) : MessageRep
         return flow {
             emit(Resource.Loading())
             try {
-                withContext(Dispatchers.IO) {
                     val messages = messagingApi.getAllMessages(header)
                     emit(Resource.Success(data = messages))
 
-                }
+
             } catch (e: RedirectResponseException) {
                 // 3xx - responses
                 println("Error:3xx ${e.response.status.description}")
@@ -101,11 +100,12 @@ class MessageRepositoryImpl(private val messagingApi: MessagingApi) : MessageRep
         return flow {
             emit(Resource.Loading())
             try {
-                withContext(Dispatchers.IO) {
+
                     val message = messagingApi.postMessage(thread, body, header)
+                Log.e("GG",message.toString())
                     emit(Resource.Success(data = message))
 
-                }
+
             } catch (e: RedirectResponseException) {
                 // 3xx - responses
                 println("Error:3xx ${e.response.status.description}")

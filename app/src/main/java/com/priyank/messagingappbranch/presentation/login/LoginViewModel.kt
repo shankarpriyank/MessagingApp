@@ -1,4 +1,4 @@
-package com.priyank.messagingappbranch.presentation
+package com.priyank.messagingappbranch.presentation.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

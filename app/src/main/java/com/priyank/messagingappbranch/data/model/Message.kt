@@ -16,6 +16,6 @@ data class Message(
 	@SerialName("body")
 	val body: String,
 	@SerialName("timestamp")
-	val timestamp: String?
+	val timestamp: String
 )
 

@@ -1,5 +1,6 @@
 package com.priyank.messagingappbranch.data.remote
 
+import android.util.Log
 import com.priyank.messagingappbranch.data.ApiRoutes
 import com.priyank.messagingappbranch.data.model.LoginCredentials
 import com.priyank.messagingappbranch.data.model.LoginResponse
@@ -38,12 +39,13 @@ class MessageApiImpl : MessagingApi {
     }
 
     override suspend fun postMessage(thread: Int, body: String, header: String): Message {
+
         return httpClient.post(ApiRoutes.messagingUrl) {
             headers {
                 append("X-Branch-Auth-Token", header)
             }
-            parameter("thread_id", 1)
-            parameter("body", "gpt")
+            parameter("thread_id", thread)
+            parameter("body", body)
 
             contentType(ContentType.Application.Json)
 

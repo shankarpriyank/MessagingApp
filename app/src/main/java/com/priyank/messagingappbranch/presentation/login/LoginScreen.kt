@@ -1,5 +1,6 @@
-package com.priyank.messagingappbranch.presentation
+package com.priyank.messagingappbranch.presentation.login
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -48,7 +49,14 @@ fun LoginScreen(
             }
         }
 
+
     }
+    LaunchedEffect(key1 = navigateToNextString) {
+        if (navigateToNextString){
+           navigate(navHostController)
+
+        }
+        }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -104,7 +112,13 @@ fun LoginScreen(
 
 
     }
+
 }
+fun navigate(navHostController:NavHostController) {
+    navHostController.navigate("messages")
+
+}
+
 
 
 @Preview(showBackground = true)
