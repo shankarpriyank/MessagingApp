@@ -1,7 +1,7 @@
 package com.priyank.messagingappbranch.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,11 +10,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,20 +21,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import java.security.PrivateKey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onUpdateUserName: (String) -> Unit,
     onUpdatePassword: (String) -> Unit,
-    onUpdateButtonClick: (String) -> Unit,
+    onLoginButtonClick: () -> Unit,
     navHostController: NavHostController,
     username: String,
     password: String,
     isButtonEnabled: Boolean,
-    navigateToNextString: Boolean
+    navigateToNextString: Boolean,
+    showToast: LoginViewModel.UIEvent
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = showToast) {
+        when(showToast){
+            is LoginViewModel.UIEvent.ShowToast ->{
+                if (showToast.message != null) {
+                    Toast.makeText(context, showToast.message, Toast.LENGTH_SHORT).show()
+                }
+
+
+            }
+        }
+
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +72,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text(text = "Enter Your Username here") },
             value = username,
-            onValueChange = {},
+            onValueChange = { onUpdateUserName(it) },
             textStyle = TextStyle(lineHeight = 1.sp, fontSize = 20.sp),
             colors = TextFieldDefaults.outlinedTextFieldColors(containerColor = Color.Transparent)
         )
@@ -76,7 +88,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text(text = "Enter Your Password here") },
             value = password,
-            onValueChange = {},
+            onValueChange = { onUpdatePassword(it) },
             textStyle = TextStyle(lineHeight = 1.sp, fontSize = 20.sp),
             colors = TextFieldDefaults.outlinedTextFieldColors(containerColor = Color.Transparent)
         )
@@ -85,7 +97,7 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .padding(top = 32.dp),
             enabled = isButtonEnabled,
-            onClick = { /*TODO*/ }) {
+            onClick =  onLoginButtonClick) {
             Text("Log In")
 
         }
@@ -104,8 +116,9 @@ fun gg() {
         username = "",
         password = "",
         navigateToNextString = false,
-        onUpdateButtonClick = {},
+        onLoginButtonClick = {},
         onUpdatePassword = {},
-        onUpdateUserName = {}
+        onUpdateUserName = {},
+        showToast = LoginViewModel.UIEvent.ShowToast()
     )
 }

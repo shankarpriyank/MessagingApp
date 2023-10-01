@@ -2,7 +2,7 @@ package com.priyank.messagingappbranch.di
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
+import com.priyank.messagingappbranch.data.local.Header
 import com.priyank.messagingappbranch.data.remote.MessageApiImpl
 import com.priyank.messagingappbranch.data.remote.MessagingApi
 import com.priyank.messagingappbranch.data.repository.MessageRepositoryImpl
@@ -19,17 +19,9 @@ import javax.inject.Singleton
 object MainModule {
     @Singleton
     @Provides
-    fun provideHeaders(@ApplicationContext context: Context): String {
+    fun provideHeader(@ApplicationContext context: Context): Header {
         val sharedPreferences = context.getSharedPreferences("accountDetails", MODE_PRIVATE)
-        val header = sharedPreferences.getString("headers", "0")
-        return header ?: "0"
-    }
-
-    @Singleton
-    @Provides
-    fun provideSharedPrefs(@ApplicationContext context: Context): SharedPreferences? {
-     return context.getSharedPreferences("accountDetails", MODE_PRIVATE)
-
+        return Header(sharedPreferences = sharedPreferences)
     }
 
     @Singleton

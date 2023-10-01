@@ -1,13 +1,14 @@
 package com.priyank.messagingappbranch.presentation
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.priyank.messagingappbranch.data.local.Header
 import com.priyank.messagingappbranch.data.model.LoginCredentials
 import com.priyank.messagingappbranch.domain.MessageRepository
 import com.priyank.messagingappbranch.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -18,14 +19,14 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val messageRepository: MessageRepository,
-    private val sharedPreferences: SharedPreferences
+    private val header: Header
 ) : ViewModel() {
 
     private val _isButtonEnabled = MutableStateFlow(true)
     val isButtonEnabled = _isButtonEnabled.asStateFlow()
 
-    private val _toastEvent = MutableSharedFlow<UIEvent>()
-    val toastEvent = _toastEvent.asSharedFlow()
+    private val _toastEvent = MutableStateFlow<UIEvent>(UIEvent.ShowToast())
+    val toastEvent = _toastEvent.asStateFlow()
 
     private val _navigateToNextScreen = MutableSharedFlow<Boolean>()
     val navigateToNextScreen = _navigateToNextScreen.asSharedFlow()
@@ -50,43 +51,54 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    suspend fun loginClick() {
-        messageRepository.login(
-            LoginCredentials(
-                username = _username.value,
-                password = _password.value
-            )
-        ).collect { repsonse ->
-            when (repsonse) {
-                is Resource.Loading -> {
-                    _isButtonEnabled.emit(false)
-                }
+    fun loginClick() {
+        viewModelScope.launch(Dispatchers.IO) {
 
-                is Resource.Error -> {
-                    _isButtonEnabled.emit(false)
-                    _toastEvent.emit(
-                        UIEvent.ShowToast(
-                            message = repsonse.message ?: "Something Went Wrong"
+
+            messageRepository.login(
+                LoginCredentials(
+                    username = _username.value,
+                    password = _password.value
+                )
+            ).collect { repsonse ->
+             //   Log.e("Gt",repsonse.message)
+
+
+                when (repsonse) {
+                    is Resource.Loading -> {
+                        _isButtonEnabled.emit(false)
+                    }
+
+                    is Resource.Error -> {
+                        _isButtonEnabled.emit(true)
+                        _toastEvent.emit(
+                            UIEvent.ShowToast(
+                                message = repsonse.message ?: "Something Went Wrong"
+                            )
+
                         )
-                    )
+                        Log.e("Gpt",repsonse.message!!)
 
+                    }
+
+                    is Resource.Success -> {
+                        Log.e("Gpp",repsonse.message ?:"GGGGG")
+
+                        header.updateHeader(repsonse.data!!.authToken)
+                        _isButtonEnabled.emit(false)
+                        _navigateToNextScreen.emit(true)
+
+
+                    }
                 }
 
-                is Resource.Success -> {
-                    _isButtonEnabled.emit(false)
-                    sharedPreferences.edit().putString("headers", repsonse.data!!.authToken).apply()
-                    _navigateToNextScreen.emit(true)
 
-
-                }
             }
-
-
         }
     }
 
     sealed class UIEvent {
-        data class ShowToast(val message: String) : UIEvent()
+        data class ShowToast(val message: String? = null) : UIEvent()
     }
 
 }

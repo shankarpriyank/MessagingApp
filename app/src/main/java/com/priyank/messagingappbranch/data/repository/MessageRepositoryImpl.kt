@@ -1,5 +1,6 @@
 package com.priyank.messagingappbranch.data.repository
 
+import android.util.Log
 import com.priyank.messagingappbranch.data.model.LoginCredentials
 import com.priyank.messagingappbranch.data.model.LoginResponse
 import com.priyank.messagingappbranch.data.model.Message
@@ -20,11 +21,14 @@ class MessageRepositoryImpl(private val messagingApi: MessagingApi) : MessageRep
             emit(Resource.Loading())
 
             try {
-                withContext(Dispatchers.IO) {
-                    val header = messagingApi.login(loginCredentials)
-                    emit(Resource.Success(data = header))
 
-                }
+                    val header = messagingApi.login(loginCredentials)
+
+                        emit(Resource.Success(data = header))
+
+
+
+
 
             } catch (e: RedirectResponseException) {
                 // 3xx - responses
@@ -33,7 +37,7 @@ class MessageRepositoryImpl(private val messagingApi: MessagingApi) : MessageRep
 
             } catch (e: ClientRequestException) {
                 // 4xx - responses
-                println("Error:4xx ${e.response.status.description}")
+                Log.e("4xx", "Error:4xx ${e.response.status.description}")
                 emit(Resource.Error(message = "Check your password/username"))
             } catch (e: ServerResponseException) {
                 // 5xx - responses
