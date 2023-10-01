@@ -102,7 +102,6 @@ class MessageRepositoryImpl(private val messagingApi: MessagingApi) : MessageRep
             try {
 
                     val message = messagingApi.postMessage(thread, body, header)
-                Log.e("GG",message.toString())
                     emit(Resource.Success(data = message))
 
 

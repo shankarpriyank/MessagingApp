@@ -61,7 +61,6 @@ class LoginViewModel @Inject constructor(
                     password = _password.value
                 )
             ).collect { repsonse ->
-             //   Log.e("Gt",repsonse.message)
 
 
                 when (repsonse) {
@@ -77,12 +76,10 @@ class LoginViewModel @Inject constructor(
                             )
 
                         )
-                        Log.e("Gpt",repsonse.message!!)
 
                     }
 
                     is Resource.Success -> {
-                        Log.e("Gpp",repsonse.message ?:"GGGGG")
 
                         header.updateHeader(repsonse.data!!.authToken)
                         _isButtonEnabled.emit(false)

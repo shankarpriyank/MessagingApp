@@ -31,7 +31,7 @@ class MessagesViewModel @Inject constructor(
     private val header: Header,
 ) : ViewModel() {
 
-    private val _messagesList = MutableStateFlow<Map<Int, List<Message>>>(emptyMap())
+    private val _messagesList = MutableStateFlow<Map<Int, MutableList<Message>>>(emptyMap())
     val messageList = _messagesList.asStateFlow()
 
     private val _loading = MutableStateFlow(true)
@@ -43,9 +43,8 @@ class MessagesViewModel @Inject constructor(
     val threadIdOfScreen = _threadIdOfScreen.asStateFlow()
 
     val subListOfMessage = combine(threadIdOfScreen, messageList) { threadId, messageList ->
-        messageList[threadId]?.toMutableList() ?: emptyList()
+        messageList[threadId]?.toMutableList() ?: emptyList<Message>().toMutableList()
     }
-
 
 
     init {
@@ -89,6 +88,7 @@ class MessagesViewModel @Inject constructor(
 
         }
     }
+
     fun updateThreadId(message: Int) {
         viewModelScope.launch {
             _threadIdOfScreen.emit(message)
@@ -97,7 +97,7 @@ class MessagesViewModel @Inject constructor(
     }
 
 
-    private fun groupMessagesByThreadId(messages: List<Message>): Map<Int, List<Message>> {
+    private fun groupMessagesByThreadId(messages: List<Message>): Map<Int, MutableList<Message>> {
         val messageGroups = mutableMapOf<Int, MutableList<Message>>()
 
         // Iterate through the messages and group them by thread_id
@@ -118,7 +118,7 @@ class MessagesViewModel @Inject constructor(
         }
 
         // Convert the map of groups to a single map
-        val result = mutableMapOf<Int, List<Message>>()
+        val result = mutableMapOf<Int, MutableList<Message>>()
         messageGroups.forEach { (threadId, messages) ->
             result[threadId] = messages
         }
@@ -146,6 +146,14 @@ class MessagesViewModel @Inject constructor(
         }
 
 
+    }
+
+    fun addMessage(threadId: Int, message: Message) {
+        val currentMessages = _messagesList.value.toMutableMap()
+        val threadMessages = currentMessages[threadId]?.toMutableList() ?: mutableListOf()
+        threadMessages.add(message)
+        currentMessages[threadId] = threadMessages
+        _messagesList.value = currentMessages
     }
 
 

@@ -53,6 +53,7 @@ fun SetupNavGraph(
                 messageFromAgent = vm.messageFromAgent.collectAsState().value,
                 onPostClick = vm::postMessage,
                 onUpdateEditText = vm::updateMessageString,
+                addMessage = vm::addMessage
 
                 )
 
