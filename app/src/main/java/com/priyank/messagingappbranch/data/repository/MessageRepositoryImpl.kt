@@ -21,10 +21,9 @@ class MessageRepositoryImpl(private val messagingApi: MessagingApi) : MessageRep
             emit(Resource.Loading())
 
             try {
+                val header = messagingApi.login(loginCredentials)
 
-                    val header = messagingApi.login(loginCredentials)
-
-                        emit(Resource.Success(data = header))
+                emit(Resource.Success(data = header))
 
 
 
